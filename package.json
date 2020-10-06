@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/asnewman/Rally/issues"
   },
-  "homepage": "https://github.com/asnewman/Rally#readme"
+  "homepage": "https://github.com/asnewman/Rally#readme",
+  "dependencies": {
+    "discord.js": "^12.3.1",
+    "dotenv": "^8.2.0"
+  }
 }
