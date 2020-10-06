@@ -1,0 +1,19 @@
+{
+  "name": "rally",
+  "version": "1.0.0",
+  "description": "Discord bot to organize group play",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asnewman/Rally.git"
+  },
+  "author": "Ashley Newman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/asnewman/Rally/issues"
+  },
+  "homepage": "https://github.com/asnewman/Rally#readme"
+}
