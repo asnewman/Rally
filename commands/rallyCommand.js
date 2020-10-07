@@ -1,4 +1,4 @@
-const PREFIX = '!';
+const { COMMAND_PREFIX, REACT_EMOJI } = require('../constants');
 
 const rallies = {};
 
@@ -18,6 +18,7 @@ const rallyMessageHandler = (message) => {
 
   message.channel.send(generateRallyMessage(rallyCommand))
     .then((createdMessage) => {
+      createdMessage.react(REACT_EMOJI);
       rallies[createdMessage.id] = rallyCommand;
     });
 };
@@ -30,7 +31,7 @@ const rallyMessageHandler = (message) => {
 const parseRallyMessage = (message) => {
   const INVALID_RALLY_COMMAND_MSG = 'Invalid rally command. Please use !rally <game name> <player count>.';
 
-  const commandBody = message.content.slice(PREFIX.length);
+  const commandBody = message.content.slice(COMMAND_PREFIX.length);
   const args = commandBody.split(' ');
   args.shift();
 
@@ -67,7 +68,7 @@ const generateRallyMessage = (rallyMessageCommand) => {
   return `${author} has started a ${gameName} party. \n` +
          `- ${author} \n` +
          `${generateUserListForRallyMessage(users)}` +
-         `Looking for **${neededPlayers}** more. React to join the party!\n`;
+         `Looking for **${neededPlayers}** more. React ${REACT_EMOJI} to join the party!\n`;
 };
 
 const generateUserListForRallyMessage = (users) => {
@@ -84,6 +85,8 @@ const rallyAddReactionHandler = (messageReaction, user) => {
   const { message } = messageReaction;
 
   const rallyCommand = rallies[message.id];
+
+  if (rallyCommand.author.id === user.id) return;
 
   if (!rallyCommand) {
     console.error('Rally command could not be found');
