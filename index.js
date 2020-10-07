@@ -1,5 +1,6 @@
 require('dotenv').config();
 const Discord = require('discord.js');
+const express = require('express');
 
 const { rallyMessageHandler, rallyAddReactionHandler, rallyRemoveReactionHandler } = require('./commands/rallyCommand');
 const { COMMAND_PREFIX, REACT_EMOJI } = require('./constants');
@@ -46,3 +47,15 @@ const parseMessage = (message) => {
 
   return { commandBody, args, command };
 };
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.get('/', (req, res) => {
+  res.send('Rally service is running.');
+});
+
+app.listen(port, () => {
+  console.log(`Rally is listening at http://localhost:${port}`);
+})
+;
