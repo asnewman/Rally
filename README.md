@@ -10,3 +10,9 @@ Logo coming soon
 * Have invite recommendations
 * Register yourself for game, get notified everytime someone wants to rally with it `rally_register`
 * DM everyone when the party is ready
+## Developing
+1. Create a `.env` file with the following properties
+  - BOT_TOKEN=<token acquired through discord's developer dashboard>
+  - ENV=<PROD or DEV>
+1. Clone repo and run `yarn`
+1. `yarn dev`
