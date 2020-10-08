@@ -1,6 +1,6 @@
 import { Message, MessageReaction, User } from "discord.js";
 
-import { COMMAND_PREFIX, REACT_EMOJI } from '../constants';
+import { COMMAND_PREFIX, REACT_EMOJI, REMOVE_EMOJI } from '../constants';
 
 const rallies: Map<string, Rally> = new Map();
 
@@ -28,6 +28,7 @@ const rallyMessageHandler = (message: Message): void => {
   message.channel.send(generateRallyMessage(rallyCommand))
     .then((createdMessage) => {
       createdMessage.react(REACT_EMOJI);
+      createdMessage.react(REMOVE_EMOJI);
       rallies[createdMessage.id] = rallyCommand;
       message.delete();
     });
@@ -67,10 +68,12 @@ const generateRallyMessage = (rally: Rally) => {
     `${generateUserListForRallyMessage(users)}`;
   }
 
-  return `${author} has started a ${gameName} party. \n` +
+  return `🔻\n` +
+         `${author} has started a ${gameName} party. \n` +
          `- ${author} \n` +
          `${generateUserListForRallyMessage(users)}` +
-         `Looking for **${neededPlayers}** more. React ${REACT_EMOJI} to join the party!\n`;
+         `Looking for **${neededPlayers}** more. React ${REACT_EMOJI} to join the party!\n`+
+         `Organizer use ${REMOVE_EMOJI} to remove the event.`;
 };
 
 const generateUserListForRallyMessage = (users: User[]): string  => {
@@ -88,19 +91,26 @@ const rallyAddReactionHandler = (messageReaction: MessageReaction, user: User): 
 
   const rallyCommand = rallies[message.id];
 
-  if (rallyCommand.author.id === user.id) return;
-
   if (!rallyCommand) {
     console.error('Rally command could not be found');
   }
 
-  const existingUser = rallyCommand.users.find((currUser: User) => currUser.id === user.id);
+  if (messageReaction.emoji.name === REACT_EMOJI) {
+    if (rallyCommand.author.id === user.id) return;
 
-  if (!existingUser) {
-    rallyCommand.users.push(user);
+    const existingUser = rallyCommand.users.find((currUser: User) => currUser.id === user.id);
+
+    if (!existingUser) {
+      rallyCommand.users.push(user);
+    }
+
+    message.edit(generateRallyMessage(rallyCommand));
   }
+  else if (messageReaction.emoji.name === REMOVE_EMOJI) {
+    if (rallyCommand.author.id !== user.id) return;
 
-  message.edit(generateRallyMessage(rallyCommand));
+    message.delete();
+  };
 };
 
 const rallyRemoveReactionHandler = (messageReaction: MessageReaction, user: User) => {

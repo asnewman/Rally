@@ -5,10 +5,12 @@ import express from 'express';
 dotenv.config();
 
 import { rallyMessageHandler, rallyAddReactionHandler, rallyRemoveReactionHandler } from './commands/rallyCommand';
-import { COMMAND_PREFIX, REACT_EMOJI } from './constants';
+import { COMMAND_PREFIX } from './constants';
 
 const client = new Discord.Client();
 client.login(process.env.BOT_TOKEN);
+
+const RALLY_USERNAME = process.env.ENV === 'PROD' ? "Rally" : "RallyDev";
 
 client.on('message', (message: Message): void => {
   if (message.author.bot) return;
@@ -24,9 +26,8 @@ client.on('message', (message: Message): void => {
 });
 
 client.on('messageReactionAdd', (messageReaction: MessageReaction, user: User): void => {
-  if (user.username === 'Rally') return;
-  if (messageReaction.message.author.username !== 'Rally') return;
-  if (messageReaction.emoji.name !== REACT_EMOJI) return;
+  if (user.username === RALLY_USERNAME) return;
+  if (messageReaction.message.author.username !== RALLY_USERNAME) return;
 
   rallyAddReactionHandler(messageReaction, user);
 });
