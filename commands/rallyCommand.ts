@@ -29,6 +29,7 @@ const rallyMessageHandler = (message: Message): void => {
     .then((createdMessage) => {
       createdMessage.react(REACT_EMOJI);
       rallies[createdMessage.id] = rallyCommand;
+      message.delete();
     });
 };
 
