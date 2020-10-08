@@ -1,4 +1,5 @@
 # Rally
+Logo coming soon
 ## Commands
 ```
 !rally <game name> <player count> - Initiate rallying of users to start playing a game
