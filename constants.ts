@@ -1,6 +1,6 @@
 const COMMAND_PREFIX = '!';
 const REACT_EMOJI = '✋';
 
-module.exports = {
+export {
   COMMAND_PREFIX, REACT_EMOJI
 };

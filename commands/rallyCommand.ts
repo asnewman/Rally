@@ -1,8 +1,17 @@
-const { COMMAND_PREFIX, REACT_EMOJI } = require('../constants');
+import { Message, MessageReaction, User } from "discord.js";
 
-const rallies = {};
+import { COMMAND_PREFIX, REACT_EMOJI } from '../constants';
 
-const rallyMessageHandler = (message) => {
+const rallies: Map<string, Rally> = new Map();
+
+type Rally = {
+  gameName: string
+  userCount: number
+  author: User
+  users: User[]
+}
+
+const rallyMessageHandler = (message: Message): void => {
   let rallyCommand = null;
 
   try {
@@ -23,12 +32,8 @@ const rallyMessageHandler = (message) => {
     });
 };
 
-/**
- * Takes in a rally command message and returns information about the command
- * @param {String} message Command string starting with the rally command
- * @returns { { gameName: String, userCount: List<String>, author: User, users: List<User>} }
- */
-const parseRallyMessage = (message) => {
+
+const parseRallyMessage = (message: Message): Rally => {
   const INVALID_RALLY_COMMAND_MSG = 'Invalid rally command. Please use !rally <game name> <player count>.';
 
   const commandBody = message.content.slice(COMMAND_PREFIX.length);
@@ -50,13 +55,9 @@ const parseRallyMessage = (message) => {
   return { gameName, userCount, author: message.author, users: [] };
 };
 
-/**
- * Creates the response to a rally command
- * @param { { gameName: String, userCount: List<String>, author: User, users: List<User>} } rallyMessageCommand Rally message object created by the parseRallyMessage
- * @returns {String}
- */
-const generateRallyMessage = (rallyMessageCommand) => {
-  const { author, userCount, gameName, users } = rallyMessageCommand;
+
+const generateRallyMessage = (rally: Rally) => {
+  const { author, userCount, gameName, users } = rally;
   const neededPlayers = userCount - users.length - 1;
 
   if (userCount - users.length - 1 <= 0) {
@@ -71,17 +72,17 @@ const generateRallyMessage = (rallyMessageCommand) => {
          `Looking for **${neededPlayers}** more. React ${REACT_EMOJI} to join the party!\n`;
 };
 
-const generateUserListForRallyMessage = (users) => {
-  let listStr = '';
+const generateUserListForRallyMessage = (users: User[]): string  => {
+  let formattedUsers = '';
 
   for (const user of users) {
-    listStr += `- ${user} \n`;
+    formattedUsers += `- ${user} \n`;
   }
 
-  return listStr;
+  return formattedUsers;
 };
 
-const rallyAddReactionHandler = (messageReaction, user) => {
+const rallyAddReactionHandler = (messageReaction: MessageReaction, user: User): void => {
   const { message } = messageReaction;
 
   const rallyCommand = rallies[message.id];
@@ -92,7 +93,7 @@ const rallyAddReactionHandler = (messageReaction, user) => {
     console.error('Rally command could not be found');
   }
 
-  const existingUser = rallyCommand.users.find(existingUser => existingUser.id === user.id);
+  const existingUser = rallyCommand.users.find((currUser: User) => currUser.id === user.id);
 
   if (!existingUser) {
     rallyCommand.users.push(user);
@@ -101,7 +102,7 @@ const rallyAddReactionHandler = (messageReaction, user) => {
   message.edit(generateRallyMessage(rallyCommand));
 };
 
-const rallyRemoveReactionHandler = (messageReaction, user) => {
+const rallyRemoveReactionHandler = (messageReaction: MessageReaction, user: User) => {
   const { message } = messageReaction;
 
   const rallyCommand = rallies[message.id];
@@ -110,7 +111,7 @@ const rallyRemoveReactionHandler = (messageReaction, user) => {
     console.error('Rally command could not be found');
   }
 
-  const existingUserIndex = rallyCommand.users.findIndex(existingUser => existingUser.id === user.id);
+  const existingUserIndex = rallyCommand.users.findIndex((currUser: User) => currUser.id === user.id);
 
   if (existingUserIndex !== -1) {
     rallyCommand.users.splice(existingUserIndex, existingUserIndex + 1);
@@ -119,7 +120,7 @@ const rallyRemoveReactionHandler = (messageReaction, user) => {
   message.edit(generateRallyMessage(rallyCommand));
 };
 
-module.exports = {
+export {
   rallyMessageHandler,
   rallyAddReactionHandler,
   rallyRemoveReactionHandler

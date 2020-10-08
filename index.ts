@@ -1,14 +1,16 @@
-require('dotenv').config();
-const Discord = require('discord.js');
-const express = require('express');
+import dotenv from 'dotenv';
+import Discord, { Message, MessageReaction, User } from 'discord.js';
+import express from 'express';
 
-const { rallyMessageHandler, rallyAddReactionHandler, rallyRemoveReactionHandler } = require('./commands/rallyCommand');
-const { COMMAND_PREFIX, REACT_EMOJI } = require('./constants');
+dotenv.config();
+
+import { rallyMessageHandler, rallyAddReactionHandler, rallyRemoveReactionHandler } from './commands/rallyCommand';
+import { COMMAND_PREFIX, REACT_EMOJI } from './constants';
 
 const client = new Discord.Client();
 client.login(process.env.BOT_TOKEN);
 
-client.on('message', function (message) {
+client.on('message', (message: Message): void => {
   if (message.author.bot) return;
   if (!message.content.startsWith(COMMAND_PREFIX)) return;
 
@@ -21,7 +23,7 @@ client.on('message', function (message) {
   }
 });
 
-client.on('messageReactionAdd', function (messageReaction, user) {
+client.on('messageReactionAdd', (messageReaction: MessageReaction, user: User): void => {
   if (user.username === 'Rally') return;
   if (messageReaction.message.author.username !== 'Rally') return;
   if (messageReaction.emoji.name !== REACT_EMOJI) return;
@@ -29,18 +31,13 @@ client.on('messageReactionAdd', function (messageReaction, user) {
   rallyAddReactionHandler(messageReaction, user);
 });
 
-client.on('messageReactionRemove', function (messageReaction, user) {
+client.on('messageReactionRemove', (messageReaction: MessageReaction, user: User): void => {
   if (messageReaction.message.author.username !== 'Rally') return;
 
   rallyRemoveReactionHandler(messageReaction, user);
 });
 
-/**
- * Takes in a message and returns information about the command
- * @param {String} message Command string starting with the PREFIX character
- * @returns { { commandBody: String, args: List<String>, command: String } }
- */
-const parseMessage = (message) => {
+const parseMessage = (message: Message) => {
   const commandBody = message.content.slice(COMMAND_PREFIX.length);
   const args = commandBody.split(' ');
   const command = args.shift().toLowerCase();
