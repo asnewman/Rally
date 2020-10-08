@@ -6,7 +6,6 @@
 ## TODO
 * Invite users to join a rally using `rally_invite`
 * Specify what channel rally will live in using `rally_admin channel <channel_name>`
-* Rally removes user commands once the message has been generated
 * Rally removes filled events
 * Organizer can delete a created rally event using `rally_remove <event_id>`
 * Have invite recommendations
