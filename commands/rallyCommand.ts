@@ -122,13 +122,16 @@ const rallyRemoveReactionHandler = (messageReaction: MessageReaction, user: User
     console.error('Rally command could not be found');
   }
 
-  const existingUserIndex = rallyCommand.users.findIndex((currUser: User) => currUser.id === user.id);
+  if (messageReaction.emoji.name === REACT_EMOJI) {
 
-  if (existingUserIndex !== -1) {
-    rallyCommand.users.splice(existingUserIndex, existingUserIndex + 1);
+    const existingUserIndex = rallyCommand.users.findIndex((currUser: User) => currUser.id === user.id);
+
+    if (existingUserIndex !== -1) {
+      rallyCommand.users.splice(existingUserIndex, existingUserIndex + 1);
+    }
+
+    message.edit(generateRallyMessage(rallyCommand));
   }
-
-  message.edit(generateRallyMessage(rallyCommand));
 };
 
 export {
