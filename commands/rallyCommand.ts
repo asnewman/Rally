@@ -65,14 +65,14 @@ const generateRallyMessage = (rally: RallyInfoNoMessageId) => {
   const neededPlayers = userCount - usersId.length - 1;
 
   if (userCount - usersId.length - 1 <= 0) {
-    return `${authorId}'s ${gameName} party has filled with: \n` +
-    `- ${authorId} \n` +
+    return `<@${authorId}>'s ${gameName} party has filled with: \n` +
+    `- @<${authorId}> \n` +
     `${generateUserListForRallyMessage(usersId)}`;
   }
 
   return `🔻\n` +
-         `${authorId} has started a ${gameName} party. \n` +
-         `- ${authorId} \n` +
+         `<@${authorId}> has started a ${gameName} party. \n` +
+         `- <@${authorId}> \n` +
          `${generateUserListForRallyMessage(usersId)}` +
          `Looking for **${neededPlayers}** more. React ${REACT_EMOJI} to join the party!\n`+
          `Organizer use ${REMOVE_EMOJI} to remove the event.`;
