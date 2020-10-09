@@ -1,41 +1,43 @@
 import { Message, MessageReaction, User } from "discord.js";
 
 import { COMMAND_PREFIX, REACT_EMOJI, REMOVE_EMOJI } from '../constants';
+import { RallyInfo, IRally, Rally } from '../entities/Rally';
 
-const rallies: Map<string, Rally> = new Map();
+type RallyInfoNoMessageId = Omit<RallyInfo, "messageId">
 
-type Rally = {
-  gameName: string
-  userCount: number
-  author: User
-  users: User[]
-}
-
-const rallyMessageHandler = (message: Message): void => {
-  let rallyCommand = null;
+const rallyMessageHandler = async (message: Message): Promise<void> => {
+  let rallyInfo: RallyInfo = null;
 
   try {
-    rallyCommand = parseRallyMessage(message);
+    rallyInfo = parseRallyMessage(message);
   } catch (err) {
+    console.error(err)
     message.reply(err.message);
     return;
   }
 
-  if (!rallyCommand) {
+  if (!rallyInfo) {
     return;
   }
 
-  message.channel.send(generateRallyMessage(rallyCommand))
-    .then((createdMessage) => {
+  await message.channel.send(generateRallyMessage(rallyInfo))
+    .then(async (createdMessage) => {
       createdMessage.react(REACT_EMOJI);
       createdMessage.react(REMOVE_EMOJI);
-      rallies[createdMessage.id] = rallyCommand;
       message.delete();
+      const newRally = new Rally({ 
+        messageId: createdMessage.id, 
+        gameName: rallyInfo.gameName, 
+        userCount: rallyInfo.userCount, 
+        authorId: message.author.id, 
+        usersId: []
+      })
+      await newRally.save();
     });
 };
 
 
-const parseRallyMessage = (message: Message): Rally => {
+const parseRallyMessage = (message: Message): IRally => {
   const INVALID_RALLY_COMMAND_MSG = 'Invalid rally command. Please use !rally <game name> <player count>.';
 
   const commandBody = message.content.slice(COMMAND_PREFIX.length);
@@ -54,83 +56,86 @@ const parseRallyMessage = (message: Message): Rally => {
 
   const gameName = args.join(' ');
 
-  return { gameName, userCount, author: message.author, users: [] };
+  return new Rally({ messageId: message.id, gameName, userCount, authorId: message.author.id, usersId: []});
 };
 
 
-const generateRallyMessage = (rally: Rally) => {
-  const { author, userCount, gameName, users } = rally;
-  const neededPlayers = userCount - users.length - 1;
+const generateRallyMessage = (rally: RallyInfoNoMessageId) => {
+  const { authorId, userCount, gameName, usersId } = rally;
+  const neededPlayers = userCount - usersId.length - 1;
 
-  if (userCount - users.length - 1 <= 0) {
-    return `${author}'s ${gameName} party has filled with: \n` +
-    `- ${author} \n` +
-    `${generateUserListForRallyMessage(users)}`;
+  if (userCount - usersId.length - 1 <= 0) {
+    return `${authorId}'s ${gameName} party has filled with: \n` +
+    `- ${authorId} \n` +
+    `${generateUserListForRallyMessage(usersId)}`;
   }
 
   return `🔻\n` +
-         `${author} has started a ${gameName} party. \n` +
-         `- ${author} \n` +
-         `${generateUserListForRallyMessage(users)}` +
+         `${authorId} has started a ${gameName} party. \n` +
+         `- ${authorId} \n` +
+         `${generateUserListForRallyMessage(usersId)}` +
          `Looking for **${neededPlayers}** more. React ${REACT_EMOJI} to join the party!\n`+
          `Organizer use ${REMOVE_EMOJI} to remove the event.`;
 };
 
-const generateUserListForRallyMessage = (users: User[]): string  => {
+const generateUserListForRallyMessage = (usersId: String[]): string  => {
   let formattedUsers = '';
 
-  for (const user of users) {
-    formattedUsers += `- ${user} \n`;
+  for (const userId of usersId) {
+    formattedUsers += `- <@${userId}> \n`;
   }
 
   return formattedUsers;
 };
 
-const rallyAddReactionHandler = (messageReaction: MessageReaction, user: User): void => {
+const rallyAddReactionHandler = async (messageReaction: MessageReaction, user: User): Promise<void> => {
   const { message } = messageReaction;
 
-  const rallyCommand = rallies[message.id];
+  const rally = await Rally.findOne({messageId: message.id});
 
-  if (!rallyCommand) {
-    console.error('Rally command could not be found');
+  if (!rally) {
+    console.error('Rally could not be found');
   }
 
   if (messageReaction.emoji.name === REACT_EMOJI) {
-    if (rallyCommand.author.id === user.id) return;
+    if (rally.authorId === user.id) return;
 
-    const existingUser = rallyCommand.users.find((currUser: User) => currUser.id === user.id);
+    const existingUser = rally.usersId.find((currUserId: String) => currUserId === user.id);
 
     if (!existingUser) {
-      rallyCommand.users.push(user);
+      rally.usersId.push(user.id);
     }
 
-    message.edit(generateRallyMessage(rallyCommand));
+    message.edit(generateRallyMessage(rally));
+    rally.save();
   }
   else if (messageReaction.emoji.name === REMOVE_EMOJI) {
-    if (rallyCommand.author.id !== user.id) return;
+    if (rally.authorId !== user.id) return;
 
     message.delete();
   };
 };
 
-const rallyRemoveReactionHandler = (messageReaction: MessageReaction, user: User) => {
+const rallyRemoveReactionHandler = async (messageReaction: MessageReaction, user: User): Promise<void> => {
   const { message } = messageReaction;
 
-  const rallyCommand = rallies[message.id];
+  const rally = await Rally.findOne({messageId: message.id});
 
-  if (!rallyCommand) {
-    console.error('Rally command could not be found');
+  if (!rally) {
+    console.error('Rally could not be found');
   }
 
   if (messageReaction.emoji.name === REACT_EMOJI) {
 
-    const existingUserIndex = rallyCommand.users.findIndex((currUser: User) => currUser.id === user.id);
+    const existingUserIndex = rally.usersId.findIndex((currUserId: String) => currUserId === user.id);
 
     if (existingUserIndex !== -1) {
-      rallyCommand.users.splice(existingUserIndex, existingUserIndex + 1);
+      rally.usersId.splice(existingUserIndex, existingUserIndex + 1);
     }
 
-    message.edit(generateRallyMessage(rallyCommand));
+    message.edit(generateRallyMessage(rally));
+
+    rally.save();
   }
 };
 
