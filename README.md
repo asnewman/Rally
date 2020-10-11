@@ -22,7 +22,7 @@
 
 - BOT_TOKEN=<token acquired through discord's developer dashboard>
 - ENV=DEV
-- MONGO_URI=mongodb://127.0.0.1:27017
+- MONGO_URI=mongodb://127.0.0.1:27017/rally
 
 1. Clone repo and run `yarn`
 1. `yarn dev`
