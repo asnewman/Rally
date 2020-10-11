@@ -1,12 +1,12 @@
 # Rally
 
-Logo coming soon
+![alt text](https://i.imgur.com/XirvUpA.png "Rally Logo")
 
 ## Commands
 
 ```
 !rally <game name> <player count> - Initiate rallying of users to start playing a game
-!rally_recruit <user> - DM's a user to join in on a rally that the author created most recently
+!rally_recruit <user> - DM's a user to join in on a rally you created most recently
 ```
 
 ## TODO
