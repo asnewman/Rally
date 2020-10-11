@@ -14,7 +14,6 @@ Logo coming soon
 - Specify what channel rally will live in using `rally_admin channel <channel_name>`
 - Have invite recommendations
 - Register yourself for game, get notified everytime someone wants to rally with it `rally_register`
-- DM everyone when the party is ready
 
 ## Developing
 
