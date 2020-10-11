@@ -33,7 +33,7 @@ const handleReactEmoji = (rally: IRally, user: User, message: Message) => {
   }
 
   // Rallying is starting
-  if (rally.userCount - 1 === rally.usersId.length) {
+  if (rally.userCount - 1 === rally.usersId.length && !rally.hasStarted) {
     rally.hasStarted = true;
     dmRallyReadyToUsers(rally);
   }
