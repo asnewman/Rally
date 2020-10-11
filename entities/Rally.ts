@@ -5,7 +5,8 @@ const rallySchema = new mongoose.Schema({
   gameName: String,
   userCount: Number,
   authorId: String,
-  usersId: [String]
+  usersId: [String],
+  hasStarted: Boolean
 });
 
 interface RallyInfo {
@@ -13,7 +14,8 @@ interface RallyInfo {
   gameName: string
   userCount: number
   authorId: string
-  usersId: string[]
+  usersId: string[],
+  hasStarted: boolean
 }
 
 interface IRally extends Document, RallyInfo {}
