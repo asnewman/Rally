@@ -3,7 +3,7 @@ import { REACT_EMOJI, REMOVE_EMOJI, COMMAND_PREFIX } from "../../constants";
 import { IRally, Rally } from "../../entities/Rally";
 import { generateRallyMessage } from "./rallyCommandHelper";
 
-const rallyMessageHandler = async (message: Message): Promise<void> => {
+const rallyCommandHandler = async (message: Message): Promise<void> => {
   let rallyInfo: IRally = null;
 
   try {
@@ -66,4 +66,4 @@ const parseRallyMessage = (message: Message): IRally => {
   });
 };
 
-export default rallyMessageHandler;
+export default rallyCommandHandler;

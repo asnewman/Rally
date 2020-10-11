@@ -7,9 +7,10 @@ dotenv.config();
 
 import { COMMAND_PREFIX } from "./constants";
 import rallyAddReactionHandler from "./commands/rallyCommand/rallyAddReactionHandler";
-import rallyMessageHandler from "./commands/rallyCommand/rallyMessageHandler";
+import rallyCommandHandler from "./commands/rallyCommand/rallyCommandHandler";
 import rallyRemoveReactionHandler from "./commands/rallyCommand/rallyRemoveReactionHandler";
 import { client } from "./bot";
+import rallyRecruitHandler from "./commands/rallyRecruit/rallyRecruitHandler";
 
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -33,7 +34,10 @@ client.on(
 
     switch (parsedMessage.command) {
       case "rally":
-        await rallyMessageHandler(message);
+        await rallyCommandHandler(message);
+        break;
+      case "rally_recruit":
+        await rallyRecruitHandler(message);
         break;
     }
   }
