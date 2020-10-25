@@ -4,7 +4,7 @@ import { client } from "../../bot";
 import { IRally, Rally } from "../../entities/Rally";
 
 type RallyRecruit = {
-  targetUser: string;
+  targetUsers: string[];
 };
 
 const rallyRecruitHandler = async (message: Message): Promise<void> => {
@@ -15,7 +15,11 @@ const rallyRecruitHandler = async (message: Message): Promise<void> => {
       return;
     }
 
-    const targetUser = await client.users.fetch(rallyRecruit.targetUser);
+    const targetUsers = [];
+    for (const targetUser of rallyRecruit.targetUsers) {
+      targetUsers.push(await client.users.fetch(targetUser));
+    }
+
     const ralliesOwnedByAuthor = await Rally.find({
       authorId: message.author.id,
     });
@@ -25,7 +29,7 @@ const rallyRecruitHandler = async (message: Message): Promise<void> => {
       (a, b) => b._id.getTimestamp() - a._id.getTimestamp()
     );
 
-    validateRallyRecruitMessage(targetUser);
+    validateRallyRecruitMessage(targetUsers);
 
     if (ralliesOwnedByAuthor.length < 1) {
       throw new Error("No rallies found to invite users to.");
@@ -41,43 +45,61 @@ const rallyRecruitHandler = async (message: Message): Promise<void> => {
       "/" +
       mostRecentRally.messageId;
 
-    targetUser.send(
-      `${message.author.username} has invited you to join in a game of **${mostRecentRally.gameName}**! Check it out: ${linkToMessage}.`
-    );
+    for (const targetUser of targetUsers) {
+      targetUser.send(
+        `${message.author.username} has invited you to join in a game of **${mostRecentRally.gameName}**! Check it out: ${linkToMessage}.`
+      );
+    }
 
     message.reply(
-      `Invite to ${targetUser} for a game of **${mostRecentRally.gameName}** sent.`
+      `Invite to ${targetUsers} for a game of **${mostRecentRally.gameName}** sent.`
     );
   } catch (err) {
+    if (err.name === "DiscordAPIError") {
+      message.reply("Failed to get data from the discord API. " + err.message);
+    } else {
+      message.reply(err.message);
+    }
     console.error(err);
-    message.reply(err.message);
   } finally {
     message.delete();
   }
 };
 
-const validateRallyRecruitMessage = (targetUser: User): void => {
-  if (!targetUser) {
-    throw new Error(`User ${targetUser} does not exist.`);
+const validateRallyRecruitMessage = (targetUsers: User[]): void => {
+  const uniqueUsers = new Set();
+
+  for (const targetUser of targetUsers) {
+    if (!targetUser) {
+      throw new Error(`User ${targetUser} does not exist.`);
+    }
+    uniqueUsers.add(targetUser.username);
+  }
+
+  if (uniqueUsers.size !== targetUsers.length) {
+    throw new Error(`User invitation list is not unique.`);
   }
 };
 
 const parseRallyRecruitMessage = (message: Message): RallyRecruit => {
   const INVALID_RALLY_COMMAND_MSG =
-    "Invalid rally command. Please use !rally_recruit <user>.";
+    "Invalid rally command. Please use !rally_recruit <user1> <user2> <userx...>.";
 
   const commandBody = message.content.slice(COMMAND_PREFIX.length);
   const args = commandBody.split(" ");
   args.shift();
 
-  if (args.length !== 1) {
+  if (args.length === 0) {
     throw new Error(INVALID_RALLY_COMMAND_MSG);
   }
 
   // Remove special characters that get added when you @ someone
-  const targetUser = args[0].replace(/<|>|@|!/g, "");
+  const targetUsers = [];
+  for (const arg of args) {
+    targetUsers.push(arg.replace(/<|>|@|!/g, ""));
+  }
 
-  return { targetUser };
+  return { targetUsers };
 };
 
 export default rallyRecruitHandler;

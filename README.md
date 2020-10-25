@@ -6,7 +6,7 @@
 
 ```
 !rally <game name> <player count> - Initiate rallying of users to start playing a game
-!rally_recruit <user> - DM's a user to join in on a rally you created most recently
+!rally_recruit <user1> <user2> <userx...>- DM's a user to join in on a rally you created most recently
 ```
 
 ## TODO
