@@ -76,14 +76,14 @@ const validateRallyRecruitMessage = (
     if (!targetUser) {
       throw new Error(`User ${targetUser} does not exist.`);
     }
-    uniqueUsers.add(targetUser.username);
+    uniqueUsers.add(targetUser.id);
   }
 
   if (uniqueUsers.size !== targetUsers.length) {
     throw new Error(`User invitation list is not unique.`);
   }
 
-  if (uniqueUsers.has(recruitAuthor.username)) {
+  if (uniqueUsers.has(recruitAuthor.id)) {
     throw new Error(`You cannot recruit yourself to a Rally that you created.`);
   }
 };
