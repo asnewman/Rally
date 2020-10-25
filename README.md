@@ -1,6 +1,6 @@
 # Rally
 
-![alt text](https://i.imgur.com/9nHnFFk.png "Rally Logo")
+![alt text](https://i.imgur.com/Hk0nzAE.png "Rally Logo")
 
 ## Commands
 
