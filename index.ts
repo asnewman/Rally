@@ -11,6 +11,7 @@ import rallyCommandHandler from "./commands/rallyCommand/rallyCommandHandler";
 import rallyRemoveReactionHandler from "./commands/rallyCommand/rallyRemoveReactionHandler";
 import { client } from "./bot";
 import rallyRecruitHandler from "./commands/rallyRecruit/rallyRecruitHandler";
+import { rallyHelpHandler } from "./commands/rallyHelp/rallyHelpHandler";
 
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -38,6 +39,11 @@ client.on(
         break;
       case "rally_recruit":
         await rallyRecruitHandler(message);
+        break;
+      case "rally_help":
+        await rallyHelpHandler(message);
+        break;
+      default:
         break;
     }
   }
