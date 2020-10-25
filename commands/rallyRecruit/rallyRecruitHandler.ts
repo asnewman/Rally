@@ -29,7 +29,7 @@ const rallyRecruitHandler = async (message: Message): Promise<void> => {
       (a, b) => b._id.getTimestamp() - a._id.getTimestamp()
     );
 
-    validateRallyRecruitMessage(targetUsers);
+    validateRallyRecruitMessage(targetUsers, message.author);
 
     if (ralliesOwnedByAuthor.length < 1) {
       throw new Error("No rallies found to invite users to.");
@@ -66,7 +66,10 @@ const rallyRecruitHandler = async (message: Message): Promise<void> => {
   }
 };
 
-const validateRallyRecruitMessage = (targetUsers: User[]): void => {
+const validateRallyRecruitMessage = (
+  targetUsers: User[],
+  recruitAuthor: User
+): void => {
   const uniqueUsers = new Set();
 
   for (const targetUser of targetUsers) {
@@ -78,6 +81,10 @@ const validateRallyRecruitMessage = (targetUsers: User[]): void => {
 
   if (uniqueUsers.size !== targetUsers.length) {
     throw new Error(`User invitation list is not unique.`);
+  }
+
+  if (uniqueUsers.has(recruitAuthor.username)) {
+    throw new Error(`You cannot recruit yourself to a Rally that you created.`);
   }
 };
 
