@@ -1,5 +1,5 @@
 import { REACT_EMOJI, REMOVE_EMOJI } from "../../constants";
-import { RallyInfo } from "../../entities/Rally";
+import { RallyInfo } from "../../entities/Rally/Rally";
 
 type RallyInfoNoMessageId = Omit<RallyInfo, "messageId">;
 

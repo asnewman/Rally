@@ -1,7 +1,8 @@
 import { Message, User } from "discord.js";
 import { COMMAND_PREFIX } from "../../constants";
 import { client } from "../../bot";
-import { IRally, Rally } from "../../entities/Rally";
+import { IRally, Rally } from "../../entities/Rally/Rally";
+import { getMostRecentRallyForAuthor } from "../../entities/Rally/RallyService";
 
 type RallyRecruit = {
   targetUsers: string[];
@@ -20,22 +21,11 @@ const rallyRecruitHandler = async (message: Message): Promise<void> => {
       targetUsers.push(await client.users.fetch(targetUser));
     }
 
-    const ralliesOwnedByAuthor = await Rally.find({
-      authorId: message.author.id,
-    });
-
-    // Order so the newest message is first
-    ralliesOwnedByAuthor.sort(
-      (a, b) => b._id.getTimestamp() - a._id.getTimestamp()
-    );
-
     validateRallyRecruitMessage(targetUsers, message.author);
 
-    if (ralliesOwnedByAuthor.length < 1) {
-      throw new Error("No rallies found to invite users to.");
-    }
-
-    const mostRecentRally = ralliesOwnedByAuthor[0];
+    const mostRecentRally = await getMostRecentRallyForAuthor(
+      message.author.id
+    );
 
     const linkToMessage =
       "http://discordapp.com/channels/" +

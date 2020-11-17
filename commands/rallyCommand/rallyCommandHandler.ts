@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 import { REACT_EMOJI, REMOVE_EMOJI, COMMAND_PREFIX } from "../../constants";
-import { IRally, Rally } from "../../entities/Rally";
+import { IRally, Rally } from "../../entities/Rally/Rally";
 import { generateRallyMessage } from "./rallyCommandHelper";
 
 const rallyCommandHandler = async (message: Message): Promise<void> => {
@@ -26,6 +26,7 @@ const rallyCommandHandler = async (message: Message): Promise<void> => {
       message.delete();
       const newRally = new Rally({
         messageId: createdMessage.id,
+        channelId: createdMessage.channel.id,
         gameName: rallyInfo.gameName,
         userCount: rallyInfo.userCount,
         authorId: message.author.id,
@@ -54,10 +55,15 @@ const parseRallyMessage = (message: Message): IRally => {
     throw new Error(INVALID_RALLY_COMMAND_MSG);
   }
 
+  if (userCount < 2) {
+    throw new Error("All rallies must call for at least 2 users.");
+  }
+
   const gameName = args.join(" ");
 
   return new Rally({
     messageId: message.id,
+    channelId: message.channel.id,
     gameName,
     userCount,
     authorId: message.author.id,

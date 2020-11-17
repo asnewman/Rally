@@ -1,7 +1,8 @@
-import { Message, MessageReaction, User } from "discord.js";
+import { Guild, Message, MessageReaction, User } from "discord.js";
 import { client } from "../../bot";
 import { REACT_EMOJI, REMOVE_EMOJI } from "../../constants";
-import { IRally, Rally } from "../../entities/Rally";
+import { IRally, Rally } from "../../entities/Rally/Rally";
+import { IRallyChannel, RallyChannel } from "../../entities/RallyChannel";
 import { generateRallyMessage } from "./rallyCommandHelper";
 
 const rallyAddReactionHandler = async (
@@ -43,14 +44,19 @@ const handleReactEmoji = (rally: IRally, user: User, message: Message) => {
 };
 
 const dmRallyReadyToUsers = async (rally: IRally) => {
-  const rallyUsersAndAuthor = [...rally.usersId, rally.authorId];
+  const rallyUsers = rally.usersId;
 
-  for (const userId of rallyUsersAndAuthor) {
+  const readyMessage = `The Rally created by <@${rally.authorId}> for **${rally.gameName}** is filled. Game on!`;
+
+  for (const userId of rallyUsers) {
     const user = await client.users.fetch(userId);
-    user.send(
-      `The Rally created by <@${rally.authorId}> for **${rally.gameName}** is filled. Game on!`
-    );
+    user.send(readyMessage);
   }
+
+  const author = await client.users.fetch(rally.authorId);
+  author.send(
+    `${readyMessage}\nType **!rally_channel** to create a temporary channel for this Rally.`
+  );
 };
 
 export default rallyAddReactionHandler;

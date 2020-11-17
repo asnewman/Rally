@@ -1,6 +1,6 @@
 import { MessageReaction, User } from "discord.js";
 import { REACT_EMOJI } from "../../constants";
-import { Rally } from "../../entities/Rally";
+import { Rally } from "../../entities/Rally/Rally";
 import { generateRallyMessage } from "./rallyCommandHelper";
 
 const rallyRemoveReactionHandler = async (
