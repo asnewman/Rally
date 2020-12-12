@@ -29,13 +29,13 @@ const rallyAddReactionHandler = async (
 const handleReactEmoji = (rally: IRally, user: User, message: Message) => {
   if (rally.authorId === user.id) return;
 
-  if (!rally.hasStarted) {
+  if (!rally.hasFilled) {
     rally.usersId.push(user.id);
   }
 
   // Rallying is starting
-  if (rally.userCount - 1 === rally.usersId.length && !rally.hasStarted) {
-    rally.hasStarted = true;
+  if (rally.userCount - 1 === rally.usersId.length && !rally.hasFilled) {
+    rally.hasFilled = true;
     dmRallyReadyToUsers(rally);
   }
 

@@ -13,6 +13,7 @@ import { client } from "./bot";
 import rallyRecruitHandler from "./commands/rallyRecruit/rallyRecruitHandler";
 import { rallyHelpHandler } from "./commands/rallyHelp/rallyHelpHandler";
 import { rallyChannelHandler } from "./commands/rallyChannel/rallyChannelHandler";
+import rallyPlanHandler from "./commands/rallyPlan/rallyPlanHandler";
 
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -46,6 +47,9 @@ client.on(
         break;
       case "rally_channel":
         await rallyChannelHandler(message);
+        break;
+      case "rally_plan":
+        await rallyPlanHandler(message);
         break;
       default:
         break;

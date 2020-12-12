@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 const rallySchema = new mongoose.Schema({
   messageId: String,
@@ -7,21 +7,24 @@ const rallySchema = new mongoose.Schema({
   userCount: Number,
   authorId: String,
   usersId: [String],
-  hasStarted: Boolean,
+  hasFilled: Boolean,
 });
 
-interface RallyInfo {
-  messageId: string;
-  channelId: string;
+interface RallyCommandBareInfo {
   gameName: string;
   userCount: number;
+}
+
+interface RallyInfo extends RallyCommandBareInfo {
+  messageId: string;
+  channelId: string;
   authorId: string;
   usersId: string[];
-  hasStarted: boolean;
+  hasFilled: boolean;
 }
 
 interface IRally extends Document, RallyInfo {}
 
 const Rally = mongoose.model<IRally>("Rally", rallySchema);
 
-export { RallyInfo, Rally, IRally };
+export { RallyInfo, Rally, IRally, RallyCommandBareInfo };

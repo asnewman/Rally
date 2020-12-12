@@ -15,7 +15,7 @@ const rallyRemoveReactionHandler = async (
     console.error("Rally could not be found");
   }
 
-  if (rally.hasStarted) {
+  if (rally.hasFilled) {
     return;
   }
 
