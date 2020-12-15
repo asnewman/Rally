@@ -2,13 +2,11 @@ import { Message } from "discord.js";
 import { COMMAND_PREFIX, REACT_EMOJI, REMOVE_EMOJI } from "../../constants";
 import { IRally, Rally } from "../../entities/Rally/Rally";
 import { IRallyPlan, RallyPlan } from "../../entities/RallyPlan/RallyPlan";
-import { parseRallyMessageString } from "../rallyCommand/rallyCommandHelper";
-import { generateRallyPlanMessage } from "./rallyPlanHelper";
+import { generateRallyMessage, parseRallyMessageString } from "../rallyCommand/rallyCommandHelper";
 
 const rallyPlanHandler = async (message: Message) => {
   try {
     await createRallyAndRallyPlan(message);
-    message.delete();
   } catch (e) {
     message.reply(e.message);
   }
@@ -17,16 +15,16 @@ const rallyPlanHandler = async (message: Message) => {
 const createRallyAndRallyPlan = async (message: Message) => {
   const { rally, rallyPlan } = parseRallyPlanMessage(message);
 
-  rally.save();
-
-  rallyPlan.rallyId = rally._id;
-  rallyPlan.save();
 
   await message.channel
-    .send(generateRallyPlanMessage(rally, rallyPlan))
+    .send(generateRallyMessage(rally, rallyPlan))
     .then(async (createdMessage) => {
+      rally.messageId = createdMessage.id;
       createdMessage.react(REACT_EMOJI);
       createdMessage.react(REMOVE_EMOJI);
+      await rally.save();
+      rallyPlan.rallyId = rally._id;
+      await rallyPlan.save();
       message.delete();
     });
 };

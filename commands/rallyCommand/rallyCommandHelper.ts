@@ -1,31 +1,59 @@
+import { client } from "../../bot";
 import { COMMAND_PREFIX, REACT_EMOJI, REMOVE_EMOJI } from "../../constants";
-import { RallyCommandBareInfo, RallyInfo } from "../../entities/Rally/Rally";
+import {
+  IRally,
+  RallyCommandBareInfo,
+  RallyInfo,
+} from "../../entities/Rally/Rally";
+import { IRallyPlan } from "../../entities/RallyPlan/RallyPlan";
+import { getMinutesUntilRally } from "../rallyPlan/rallyPlanHelper";
 
 type RallyInfoNoMessageId = Omit<RallyInfo, "messageId">;
 
-const generateRallyMessage = (rally: RallyInfoNoMessageId) => {
+const generateRallyMessage = (
+  rally: RallyInfoNoMessageId,
+  rallyPlan: IRallyPlan
+) => {
   const { authorId, userCount, gameName, usersId, hasFilled } = rally;
   const neededPlayers = userCount - usersId.length - 1;
 
+  let rallyMsg;
+
   if (hasFilled) {
-    return (
+    rallyMsg =
+      `🔻\n` +
       `<@${authorId}>'s ${gameName} Rally has filled with: \n` +
       `- <@${authorId}> \n` +
-      `${generateUserListForRallyMessage(usersId)}`
-    );
+      `${generateUserListForRallyMessage(usersId)}`;
+
+    if (rallyPlan && rallyPlan.scheduledEpoch > Date.now()) {
+      rallyMsg += `The Rally is planned to start in **${getMinutesUntilRally(
+        rallyPlan.scheduledEpoch
+      ) + 1} minutes**.\n`;
+    }
+
+  } else {
+    rallyMsg =
+      `🔻\n` +
+      `<@${authorId}> has created a ${gameName} Rally. \n`;
+
+    if (rallyPlan && rallyPlan.scheduledEpoch > Date.now()) {
+      rallyMsg += `The Rally is planned to start in **${getMinutesUntilRally(
+        rallyPlan.scheduledEpoch
+      ) + 1} minutes**.\n`;
+    }
+
+    rallyMsg += `Current recruits include: \n` +
+      `- <@${authorId}> \n` +
+      `${generateUserListForRallyMessage(usersId)}` +
+      `Looking for **${neededPlayers}** more. React ${REACT_EMOJI} to join the party!\n` +
+      `Organizer use ${REMOVE_EMOJI} to remove the event.\n`;
   }
 
-  return (
-    `🔻\n` +
-    `<@${authorId}> has started a ${gameName} Rally. \n` +
-    `- <@${authorId}> \n` +
-    `${generateUserListForRallyMessage(usersId)}` +
-    `Looking for **${neededPlayers}** more. React ${REACT_EMOJI} to join the party!\n` +
-    `Organizer use ${REMOVE_EMOJI} to remove the event.`
-  );
+  return rallyMsg;
 };
 
-export const generateUserListForRallyMessage = (usersId: String[]): string => {
+export const generateUserListForRallyMessage = (usersId: string[]): string => {
   let formattedUsers = "";
 
   for (const userId of usersId) {
@@ -62,8 +90,24 @@ const parseRallyMessageString = (command: string): RallyCommandBareInfo => {
 
   return {
     gameName,
-    userCount
+    userCount,
   };
-}
+};
 
-export { generateRallyMessage, parseRallyMessageString };
+const dmRallyReadyToUsers = async (rally: IRally) => {
+  const rallyUsers = rally.usersId;
+
+  const readyMessage = `The Rally created by <@${rally.authorId}> for **${rally.gameName}** is filled. Game on!`;
+
+  for (const userId of rallyUsers) {
+    const user = await client.users.fetch(userId);
+    user.send(readyMessage);
+  }
+
+  const author = await client.users.fetch(rally.authorId);
+  author.send(
+    `${readyMessage}\nType **!rally_channel** to create a temporary channel for this Rally.`
+  );
+};
+
+export { generateRallyMessage, parseRallyMessageString, dmRallyReadyToUsers };

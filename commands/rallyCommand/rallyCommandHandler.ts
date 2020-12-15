@@ -22,7 +22,7 @@ const rallyCommandHandler = async (message: Message): Promise<void> => {
   }
 
   await message.channel
-    .send(generateRallyMessage(rallyInfo))
+    .send(generateRallyMessage(rallyInfo, null))
     .then(async (createdMessage) => {
       createdMessage.react(REACT_EMOJI);
       createdMessage.react(REMOVE_EMOJI);

@@ -14,6 +14,9 @@ import rallyRecruitHandler from "./commands/rallyRecruit/rallyRecruitHandler";
 import { rallyHelpHandler } from "./commands/rallyHelp/rallyHelpHandler";
 import { rallyChannelHandler } from "./commands/rallyChannel/rallyChannelHandler";
 import rallyPlanHandler from "./commands/rallyPlan/rallyPlanHandler";
+import { Rally } from "./entities/Rally/Rally";
+import { RallyPlan } from "./entities/RallyPlan/RallyPlan";
+import rallyPlanUpdater from "./commands/rallyPlan/rallyPlanUpdater";
 
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -21,11 +24,13 @@ mongoose.connect(process.env.MONGO_URI, {
 });
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", function () {
+db.once("open", () => {
   console.info("Successfully connected to the database");
 });
 
 const RALLY_USERNAME = process.env.ENV === "PROD" ? "Rally" : "RallyDev";
+
+rallyPlanUpdater();
 
 client.on(
   "message",
@@ -63,7 +68,18 @@ client.on(
     if (user.username === RALLY_USERNAME) return;
     if (messageReaction.message.author.username !== RALLY_USERNAME) return;
 
-    await rallyAddReactionHandler(messageReaction, user);
+    const { message } = messageReaction;
+
+    const rally = await Rally.findOne({ messageId: message.id });
+
+    if (!rally) {
+      console.error('Rally not found');
+      return;
+    }
+
+    const rallyPlan = await RallyPlan.findOne({rallyId: rally._id});
+
+    await rallyAddReactionHandler(messageReaction, user, rally, rallyPlan);
   }
 );
 
@@ -72,7 +88,18 @@ client.on(
   async (messageReaction: MessageReaction, user: User): Promise<void> => {
     if (messageReaction.message.author.username !== RALLY_USERNAME) return;
 
-    await rallyRemoveReactionHandler(messageReaction, user);
+    const { message } = messageReaction;
+
+    const rally = await Rally.findOne({ messageId: message.id });
+
+    if (!rally) {
+      console.error('Rally not found');
+      return;
+    }
+
+    const rallyPlan = await RallyPlan.findOne({rallyId: rally._id});
+
+    await rallyRemoveReactionHandler(messageReaction, user, rally, rallyPlan);
   }
 );
 
