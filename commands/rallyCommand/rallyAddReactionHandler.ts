@@ -1,24 +1,19 @@
-import { Guild, Message, MessageReaction, User } from "discord.js";
-import { client } from "../../bot";
+import { Message, MessageReaction, User } from "discord.js";
 import { REACT_EMOJI, REMOVE_EMOJI } from "../../constants";
-import { IRally, Rally } from "../../entities/Rally/Rally";
-import { IRallyChannel, RallyChannel } from "../../entities/RallyChannel";
-import { generateRallyMessage } from "./rallyCommandHelper";
+import { IRally } from "../../entities/Rally/Rally";
+import { IRallyPlan } from "../../entities/RallyPlan/RallyPlan";
+import { dmRallyReadyToUsers, generateRallyMessage } from "./rallyCommandHelper";
 
 const rallyAddReactionHandler = async (
   messageReaction: MessageReaction,
-  user: User
+  user: User,
+  rally: IRally,
+  rallyPlan: IRallyPlan
 ): Promise<void> => {
   const { message } = messageReaction;
 
-  const rally = await Rally.findOne({ messageId: message.id });
-
-  if (!rally) {
-    console.error("Rally could not be found");
-  }
-
   if (messageReaction.emoji.name === REACT_EMOJI) {
-    handleReactEmoji(rally, user, message);
+    handleReactEmoji(rally, rallyPlan, user, message);
   } else if (messageReaction.emoji.name === REMOVE_EMOJI) {
     if (rally.authorId !== user.id) return;
 
@@ -26,37 +21,24 @@ const rallyAddReactionHandler = async (
   }
 };
 
-const handleReactEmoji = (rally: IRally, user: User, message: Message) => {
+const handleReactEmoji = (rally: IRally, rallyPlan: IRallyPlan, user: User, message: Message) => {
   if (rally.authorId === user.id) return;
 
-  if (!rally.hasStarted) {
+  if (!rally.hasFilled) {
     rally.usersId.push(user.id);
   }
 
   // Rallying is starting
-  if (rally.userCount - 1 === rally.usersId.length && !rally.hasStarted) {
-    rally.hasStarted = true;
-    dmRallyReadyToUsers(rally);
+  if (rally.userCount - 1 === rally.usersId.length && !rally.hasFilled) {
+    rally.hasFilled = true;
+
+    if ((rallyPlan && rallyPlan.scheduledEpoch <= Date.now()) || !rallyPlan) {
+      dmRallyReadyToUsers(rally);
+    }
   }
 
-  message.edit(generateRallyMessage(rally));
+  message.edit(generateRallyMessage(rally, rallyPlan));
   rally.save();
-};
-
-const dmRallyReadyToUsers = async (rally: IRally) => {
-  const rallyUsers = rally.usersId;
-
-  const readyMessage = `The Rally created by <@${rally.authorId}> for **${rally.gameName}** is filled. Game on!`;
-
-  for (const userId of rallyUsers) {
-    const user = await client.users.fetch(userId);
-    user.send(readyMessage);
-  }
-
-  const author = await client.users.fetch(rally.authorId);
-  author.send(
-    `${readyMessage}\nType **!rally_channel** to create a temporary channel for this Rally.`
-  );
 };
 
 export default rallyAddReactionHandler;

@@ -1,7 +1,6 @@
 import { Message, User } from "discord.js";
 import { COMMAND_PREFIX } from "../../constants";
 import { client } from "../../bot";
-import { IRally, Rally } from "../../entities/Rally/Rally";
 import { getMostRecentRallyForAuthor } from "../../entities/Rally/RallyService";
 
 type RallyRecruit = {

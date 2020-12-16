@@ -1,34 +1,31 @@
 import { MessageReaction, User } from "discord.js";
 import { REACT_EMOJI } from "../../constants";
-import { Rally } from "../../entities/Rally/Rally";
+import { IRally, Rally } from "../../entities/Rally/Rally";
+import { IRallyPlan } from "../../entities/RallyPlan/RallyPlan";
 import { generateRallyMessage } from "./rallyCommandHelper";
 
 const rallyRemoveReactionHandler = async (
   messageReaction: MessageReaction,
-  user: User
+  user: User,
+  rally: IRally,
+  rallyPlan: IRallyPlan
 ): Promise<void> => {
   const { message } = messageReaction;
 
-  const rally = await Rally.findOne({ messageId: message.id });
-
-  if (!rally) {
-    console.error("Rally could not be found");
-  }
-
-  if (rally.hasStarted) {
+  if (rally.hasFilled) {
     return;
   }
 
   if (messageReaction.emoji.name === REACT_EMOJI) {
     const existingUserIndex = rally.usersId.findIndex(
-      (currUserId: String) => currUserId === user.id
+      (currUserId: string) => currUserId === user.id
     );
 
     if (existingUserIndex !== -1) {
       rally.usersId.splice(existingUserIndex, existingUserIndex + 1);
     }
 
-    message.edit(generateRallyMessage(rally));
+    message.edit(generateRallyMessage(rally, rallyPlan));
 
     rally.save();
   }
