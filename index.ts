@@ -65,8 +65,10 @@ client.on(
 client.on(
   "messageReactionAdd",
   async (messageReaction: MessageReaction, user: User): Promise<void> => {
+    const msg = await messageReaction.message.fetch();
+
     if (user.username === RALLY_USERNAME) return;
-    if (messageReaction.message.author.username !== RALLY_USERNAME) return;
+    if (msg.author.username !== RALLY_USERNAME) return;
 
     const { message } = messageReaction;
 
@@ -86,7 +88,9 @@ client.on(
 client.on(
   "messageReactionRemove",
   async (messageReaction: MessageReaction, user: User): Promise<void> => {
-    if (messageReaction.message.author.username !== RALLY_USERNAME) return;
+    const msg = await messageReaction.message.fetch();
+
+    if (msg.author.username !== RALLY_USERNAME) return;
 
     const { message } = messageReaction;
 

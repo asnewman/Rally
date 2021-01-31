@@ -33,7 +33,7 @@ const parseRallyPlanMessage = (
   message: Message
 ): { rallyPlan: IRallyPlan; rally: IRally } => {
   const INVALID_RALLY_PLAN_COMMAND_MSG =
-    "Invalid Rally Plan command. Please use !rally_plan <mintues untill Rally> <game name> <player count>.";
+    "Invalid Rally Plan command. Please use !rally_plan <mintues untill Rally> <game name> <player count>. Minutes must be less than 10080.";
 
   const commandBody = message.content.slice(COMMAND_PREFIX.length);
   const args = commandBody.split(" ");
@@ -65,8 +65,14 @@ const parseRallyPlanMessage = (
       throw new Error(INVALID_RALLY_PLAN_COMMAND_MSG);
     }
 
+    const minuteArg = parseInt(args[1], 10);
+
+    if (minuteArg > 10080) {
+      throw new Error(INVALID_RALLY_PLAN_COMMAND_MSG);
+    }
+
     const rallyPlan = new RallyPlan({
-      scheduledEpoch: (minutesSinceEpoch + parseInt(args[1], 10)) * 60 * 1000,
+      scheduledEpoch: (minutesSinceEpoch + minuteArg) * 60 * 1000,
     });
 
     return {
