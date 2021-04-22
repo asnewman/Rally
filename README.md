@@ -21,6 +21,7 @@
 - Creator start rally before all ready
 - Delete temporary channel once all users have left
 - For rally_plan notify creator if timer runs out and there aren't enough people
+- Backup rally recruits for if someone leaves
 
 ## Developing
 
