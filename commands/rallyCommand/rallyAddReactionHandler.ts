@@ -27,6 +27,9 @@ const handleReactEmoji = (rally: IRally, rallyPlan: IRallyPlan, user: User, mess
   if (!rally.hasFilled) {
     rally.usersId.push(user.id);
   }
+  else {
+    rally.backupUsersId.push(user.id);
+  }
 
   // Rallying is starting
   if (rally.userCount - 1 === rally.usersId.length && !rally.hasFilled) {

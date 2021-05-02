@@ -14,7 +14,7 @@ const generateRallyMessage = (
   rally: RallyInfoNoMessageId,
   rallyPlan: IRallyPlan
 ) => {
-  const { authorId, userCount, gameName, usersId, hasFilled } = rally;
+  const { authorId, userCount, gameName, usersId, hasFilled, backupUsersId } = rally;
   const neededPlayers = userCount - usersId.length - 1;
 
   let rallyMsg;
@@ -25,6 +25,11 @@ const generateRallyMessage = (
       `<@${authorId}>'s ${gameName} Rally has filled with: \n` +
       `- <@${authorId}> \n` +
       `${generateUserListForRallyMessage(usersId)}`;
+
+    if (backupUsersId.length) {
+      rallyMsg += `\nBackup players:\n` +
+          `${generateUserListForRallyMessage(backupUsersId)}`;
+    }
 
     if (rallyPlan && rallyPlan.scheduledEpoch > Date.now()) {
       rallyMsg += `The Rally is planned to start in **${getMinutesUntilRally(
