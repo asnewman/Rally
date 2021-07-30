@@ -25,14 +25,14 @@ const handleReactEmoji = (rally: IRally, rallyPlan: IRallyPlan, user: User, mess
   if (rally.authorId === user.id) return;
 
   if (!rally.hasFilled) {
-    rally.usersId.push(user.id);
+    rally.userIds.push(user.id);
   }
   else {
-    rally.backupUsersId.push(user.id);
+    rally.backupUserIds.push(user.id);
   }
 
   // Rallying is starting
-  if (rally.userCount - 1 === rally.usersId.length && !rally.hasFilled) {
+  if (rally.userCount - 1 === rally.userIds.length && !rally.hasFilled) {
     rally.hasFilled = true;
 
     if ((rallyPlan && rallyPlan.scheduledEpoch <= Date.now()) || !rallyPlan) {

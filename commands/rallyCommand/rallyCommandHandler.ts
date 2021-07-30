@@ -33,7 +33,7 @@ const rallyCommandHandler = async (message: Message): Promise<void> => {
         gameName: rallyInfo.gameName,
         userCount: rallyInfo.userCount,
         authorId: message.author.id,
-        usersId: [],
+        userIds: [],
         hasFilled: rallyInfo.hasFilled,
       });
       await newRally.save();
@@ -49,7 +49,7 @@ const parseRallyMessage = (message: Message): IRally => {
     gameName: rallyCommandBareInfo.gameName,
     userCount: rallyCommandBareInfo.userCount,
     authorId: message.author.id,
-    usersId: [],
+    userIds: [],
     hasFilled: false,
   });
 };

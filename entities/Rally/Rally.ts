@@ -6,8 +6,8 @@ const rallySchema = new mongoose.Schema({
   gameName: String,
   userCount: Number,
   authorId: String,
-  usersId: [String],
-  backupUsersId: [String],
+  userIds: [String],
+  backupUserIds: [String],
   hasFilled: Boolean,
 });
 
@@ -20,8 +20,8 @@ interface RallyInfo extends RallyCommandBareInfo {
   messageId: string;
   channelId: string;
   authorId: string;
-  usersId: string[];
-  backupUsersId: string[];
+  userIds: string[];
+  backupUserIds: string[];
   hasFilled: boolean;
 }
 

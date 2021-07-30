@@ -12,8 +12,8 @@ const rallyRemoveReactionHandler = async (
 ): Promise<void> => {
   const { message } = messageReaction;
 
-  const isUserRecruit = rally.usersId.includes((user.id));
-  const isUserBackup = rally.backupUsersId.includes((user.id));
+  const isUserRecruit = rally.userIds.includes((user.id));
+  const isUserBackup = rally.backupUserIds.includes((user.id));
 
   if (rally.hasFilled && isUserRecruit) {
     rally.hasFilled = false;
@@ -21,28 +21,28 @@ const rallyRemoveReactionHandler = async (
 
   if (messageReaction.emoji.name === REACT_EMOJI) {
     if (isUserRecruit) {
-      const existingUserIndex = rally.usersId.findIndex(
+      const existingUserIndex = rally.userIds.findIndex(
           (currUserId: string) => currUserId === user.id
       );
 
       if (existingUserIndex !== -1) {
-        rally.usersId.splice(existingUserIndex, existingUserIndex + 1);
+        rally.userIds.splice(existingUserIndex, existingUserIndex + 1);
       }
     }
 
     if (isUserBackup) {
-      const existingUserIndex = rally.backupUsersId.findIndex(
+      const existingUserIndex = rally.backupUserIds.findIndex(
           (currUserId: string) => currUserId === user.id
       );
 
       if (existingUserIndex !== -1) {
-        rally.backupUsersId.splice(existingUserIndex, existingUserIndex + 1);
+        rally.backupUserIds.splice(existingUserIndex, existingUserIndex + 1);
       }
     }
 
     // move backup player to player list
-    if (rally.backupUsersId.length && !rally.hasFilled) {
-      rally.usersId.push(rally.backupUsersId.shift());
+    if (rally.backupUserIds.length && !rally.hasFilled) {
+      rally.userIds.push(rally.backupUserIds.shift());
       rally.hasFilled = true;
     }
 

@@ -14,8 +14,8 @@ const generateRallyMessage = (
   rally: RallyInfoNoMessageId,
   rallyPlan: IRallyPlan
 ) => {
-  const { authorId, userCount, gameName, usersId, hasFilled, backupUsersId } = rally;
-  const neededPlayers = userCount - usersId.length - 1;
+  const { authorId, userCount, gameName, userIds, hasFilled, backupUserIds } = rally;
+  const neededPlayers = userCount - userIds.length - 1;
 
   let rallyMsg;
 
@@ -24,11 +24,11 @@ const generateRallyMessage = (
       `🔻\n` +
       `<@${authorId}>'s ${gameName} Rally has filled with: \n` +
       `- <@${authorId}> \n` +
-      `${generateUserListForRallyMessage(usersId)}`;
+      `${generateUserListForRallyMessage(userIds)}`;
 
-    if (backupUsersId.length) {
+    if (backupUserIds.length) {
       rallyMsg += `\nBackup players:\n` +
-          `${generateUserListForRallyMessage(backupUsersId)}`;
+          `${generateUserListForRallyMessage(backupUserIds)}`;
     }
 
     if (rallyPlan && rallyPlan.scheduledEpoch > Date.now()) {
@@ -50,7 +50,7 @@ const generateRallyMessage = (
 
     rallyMsg += `Current recruits include: \n` +
       `- <@${authorId}> \n` +
-      `${generateUserListForRallyMessage(usersId)}` +
+      `${generateUserListForRallyMessage(userIds)}` +
       `Looking for **${neededPlayers}** more. React ${REACT_EMOJI} to join the party!\n` +
       `Organizer use ${REMOVE_EMOJI} to remove the event.\n`;
   }
@@ -58,10 +58,10 @@ const generateRallyMessage = (
   return rallyMsg;
 };
 
-export const generateUserListForRallyMessage = (usersId: string[]): string => {
+export const generateUserListForRallyMessage = (userIds: string[]): string => {
   let formattedUsers = "";
 
-  for (const userId of usersId) {
+  for (const userId of userIds) {
     formattedUsers += `- <@${userId}> \n`;
   }
 
@@ -100,7 +100,7 @@ const parseRallyMessageString = (command: string): RallyCommandBareInfo => {
 };
 
 const dmRallyReadyToUsers = async (rally: IRally) => {
-  const rallyUsers = rally.usersId;
+  const rallyUsers = rally.userIds;
 
   const readyMessage = `The Rally created by <@${rally.authorId}> for **${rally.gameName}** is filled. Game on!`;
 

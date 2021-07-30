@@ -54,7 +54,7 @@ const parseRallyPlanMessage = (
       gameName: rallyCommandBareInfo.gameName,
       userCount: rallyCommandBareInfo.userCount,
       authorId: message.author.id,
-      usersId: [],
+      userIds: [],
       hasFilled: false,
     });
 

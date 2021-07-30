@@ -82,7 +82,7 @@ const notifyUsersOfNewChannel = async (
   rally: IRally,
   rallyChannel: IRallyChannel
 ) => {
-  const rallyUsers = [...rally.usersId, rally.authorId];
+  const rallyUsers = [...rally.userIds, rally.authorId];
 
   const readyMessage = `A new channel has been create for this Rally. Please join ${rallyChannel.channelName}`;
 
