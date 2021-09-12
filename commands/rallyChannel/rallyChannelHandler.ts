@@ -23,9 +23,10 @@ const rallyChannelHandler = async (message: Message) => {
   const mostRecentRallyChannelForAuthor = (await client.channels.fetch(
     mostRecentRallyForAuthor.channelId
   )) as TextChannel;
-  const mostRecentRallyMessageForAuthor = await mostRecentRallyChannelForAuthor.messages.fetch(
-    mostRecentRallyForAuthor.messageId
-  );
+  const mostRecentRallyMessageForAuthor =
+    await mostRecentRallyChannelForAuthor.messages.fetch(
+      mostRecentRallyForAuthor.messageId
+    );
 
   const rallyChannel = await createTemporaryChannel(
     mostRecentRallyMessageForAuthor.guild,

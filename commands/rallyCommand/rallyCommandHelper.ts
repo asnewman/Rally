@@ -14,7 +14,8 @@ const generateRallyMessage = (
   rally: RallyInfoNoMessageId,
   rallyPlan: IRallyPlan
 ) => {
-  const { authorId, userCount, gameName, userIds, hasFilled, backupUserIds } = rally;
+  const { authorId, userCount, gameName, userIds, hasFilled, backupUserIds } =
+    rally;
   const neededPlayers = userCount - userIds.length - 1;
 
   let rallyMsg;
@@ -27,28 +28,27 @@ const generateRallyMessage = (
       `${generateUserListForRallyMessage(userIds)}`;
 
     if (backupUserIds.length) {
-      rallyMsg += `\nBackup players:\n` +
-          `${generateUserListForRallyMessage(backupUserIds)}`;
+      rallyMsg +=
+        `\nBackup players:\n` +
+        `${generateUserListForRallyMessage(backupUserIds)}`;
     }
 
     if (rallyPlan && rallyPlan.scheduledEpoch > Date.now()) {
-      rallyMsg += `The Rally is planned to start in **${getMinutesUntilRally(
-        rallyPlan.scheduledEpoch
-      ) + 1} minutes**.\n`;
+      rallyMsg += `The Rally is planned to start in **${
+        getMinutesUntilRally(rallyPlan.scheduledEpoch) + 1
+      } minutes**.\n`;
     }
-
   } else {
-    rallyMsg =
-      `🔻\n` +
-      `<@${authorId}> has created a ${gameName} Rally. \n`;
+    rallyMsg = `🔻\n` + `<@${authorId}> has created a ${gameName} Rally. \n`;
 
     if (rallyPlan && rallyPlan.scheduledEpoch > Date.now()) {
-      rallyMsg += `The Rally is planned to start in **${getMinutesUntilRally(
-        rallyPlan.scheduledEpoch
-      ) + 1} minutes**.\n`;
+      rallyMsg += `The Rally is planned to start in **${
+        getMinutesUntilRally(rallyPlan.scheduledEpoch) + 1
+      } minutes**.\n`;
     }
 
-    rallyMsg += `Current recruits include: \n` +
+    rallyMsg +=
+      `Current recruits include: \n` +
       `- <@${authorId}> \n` +
       `${generateUserListForRallyMessage(userIds)}` +
       `Looking for **${neededPlayers}** more. React ${REACT_EMOJI} to join the party!\n` +

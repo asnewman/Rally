@@ -2,7 +2,10 @@ import { Message } from "discord.js";
 import { COMMAND_PREFIX, REACT_EMOJI, REMOVE_EMOJI } from "../../constants";
 import { IRally, Rally } from "../../entities/Rally/Rally";
 import { IRallyPlan, RallyPlan } from "../../entities/RallyPlan/RallyPlan";
-import { generateRallyMessage, parseRallyMessageString } from "../rallyCommand/rallyCommandHelper";
+import {
+  generateRallyMessage,
+  parseRallyMessageString,
+} from "../rallyCommand/rallyCommandHelper";
 
 const rallyPlanHandler = async (message: Message) => {
   try {
@@ -14,7 +17,6 @@ const rallyPlanHandler = async (message: Message) => {
 
 const createRallyAndRallyPlan = async (message: Message) => {
   const { rally, rallyPlan } = parseRallyPlanMessage(message);
-
 
   await message.channel
     .send(generateRallyMessage(rally, rallyPlan))

@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import { Message, MessageReaction, User } from "discord.js";
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
 
 dotenv.config();
 
@@ -33,35 +34,32 @@ const RALLY_USERNAME = process.env.ENV === "PROD" ? "Rally" : "RallyDev";
 
 rallyPlanUpdater();
 
-client.on(
-  "message",
-  async (message: Message): Promise<void> => {
-    if (message.author.bot) return;
-    if (!message.content.startsWith(COMMAND_PREFIX)) return;
+client.on("message", async (message: Message): Promise<void> => {
+  if (message.author.bot) return;
+  if (!message.content.startsWith(COMMAND_PREFIX)) return;
 
-    const parsedMessage = parseMessage(message);
+  const parsedMessage = parseMessage(message);
 
-    switch (parsedMessage.command) {
-      case "rally":
-        await rallyCommandHandler(message);
-        break;
-      case "rally_recruit":
-        await rallyRecruitHandler(message);
-        break;
-      case "rally_help":
-        await rallyHelpHandler(message);
-        break;
-      case "rally_channel":
-        await rallyChannelHandler(message);
-        break;
-      case "rally_plan":
-        await rallyPlanHandler(message);
-        break;
-      default:
-        break;
-    }
+  switch (parsedMessage.command) {
+    case "rally":
+      await rallyCommandHandler(message);
+      break;
+    case "rally_recruit":
+      await rallyRecruitHandler(message);
+      break;
+    case "rally_help":
+      await rallyHelpHandler(message);
+      break;
+    case "rally_channel":
+      await rallyChannelHandler(message);
+      break;
+    case "rally_plan":
+      await rallyPlanHandler(message);
+      break;
+    default:
+      break;
   }
-);
+});
 
 client.on(
   "messageReactionAdd",
@@ -76,11 +74,11 @@ client.on(
     const rally = await Rally.findOne({ messageId: message.id });
 
     if (!rally) {
-      console.error('Rally not found');
+      console.error("Rally not found");
       return;
     }
 
-    const rallyPlan = await RallyPlan.findOne({rallyId: rally._id});
+    const rallyPlan = await RallyPlan.findOne({ rallyId: rally._id });
 
     await rallyAddReactionHandler(messageReaction, user, rally, rallyPlan);
   }
@@ -98,11 +96,11 @@ client.on(
     const rally = await Rally.findOne({ messageId: message.id });
 
     if (!rally) {
-      console.error('Rally not found');
+      console.error("Rally not found");
       return;
     }
 
-    const rallyPlan = await RallyPlan.findOne({rallyId: rally._id});
+    const rallyPlan = await RallyPlan.findOne({ rallyId: rally._id });
 
     await rallyRemoveReactionHandler(messageReaction, user, rally, rallyPlan);
   }
@@ -117,6 +115,8 @@ const parseMessage = (message: Message) => {
 };
 
 const app = express();
+app.use(cors());
+
 const port = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
@@ -127,4 +127,4 @@ app.listen(port, () => {
   console.log(`Rally is listening at http://localhost:${port}`);
 });
 
-app.use("/api/rally", rally)
+app.use("/api/rally", rally);

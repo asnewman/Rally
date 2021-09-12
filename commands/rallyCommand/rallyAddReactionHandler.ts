@@ -2,7 +2,10 @@ import { Message, MessageReaction, User } from "discord.js";
 import { REACT_EMOJI, REMOVE_EMOJI } from "../../constants";
 import { IRally } from "../../entities/Rally/Rally";
 import { IRallyPlan } from "../../entities/RallyPlan/RallyPlan";
-import { dmRallyReadyToUsers, generateRallyMessage } from "./rallyCommandHelper";
+import {
+  dmRallyReadyToUsers,
+  generateRallyMessage,
+} from "./rallyCommandHelper";
 
 const rallyAddReactionHandler = async (
   messageReaction: MessageReaction,
@@ -21,13 +24,17 @@ const rallyAddReactionHandler = async (
   }
 };
 
-const handleReactEmoji = (rally: IRally, rallyPlan: IRallyPlan, user: User, message: Message) => {
+const handleReactEmoji = (
+  rally: IRally,
+  rallyPlan: IRallyPlan,
+  user: User,
+  message: Message
+) => {
   if (rally.authorId === user.id) return;
 
   if (!rally.hasFilled) {
     rally.userIds.push(user.id);
-  }
-  else {
+  } else {
     rally.backupUserIds.push(user.id);
   }
 

@@ -12,8 +12,8 @@ const rallyRemoveReactionHandler = async (
 ): Promise<void> => {
   const { message } = messageReaction;
 
-  const isUserRecruit = rally.userIds.includes((user.id));
-  const isUserBackup = rally.backupUserIds.includes((user.id));
+  const isUserRecruit = rally.userIds.includes(user.id);
+  const isUserBackup = rally.backupUserIds.includes(user.id);
 
   if (rally.hasFilled && isUserRecruit) {
     rally.hasFilled = false;
@@ -22,7 +22,7 @@ const rallyRemoveReactionHandler = async (
   if (messageReaction.emoji.name === REACT_EMOJI) {
     if (isUserRecruit) {
       const existingUserIndex = rally.userIds.findIndex(
-          (currUserId: string) => currUserId === user.id
+        (currUserId: string) => currUserId === user.id
       );
 
       if (existingUserIndex !== -1) {
@@ -32,7 +32,7 @@ const rallyRemoveReactionHandler = async (
 
     if (isUserBackup) {
       const existingUserIndex = rally.backupUserIds.findIndex(
-          (currUserId: string) => currUserId === user.id
+        (currUserId: string) => currUserId === user.id
       );
 
       if (existingUserIndex !== -1) {
