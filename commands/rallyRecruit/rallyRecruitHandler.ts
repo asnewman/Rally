@@ -23,6 +23,8 @@ const rallyRecruitHandler = async (message: Message): Promise<void> => {
         const roleMembers = message.guild.roles.cache.get(roleId).members;
 
         for (const member of roleMembers) {
+          if (message.author.id === member[0]) continue;
+
           targetUsers.push(await client.users.fetch(member[0])); 
         }
       }
