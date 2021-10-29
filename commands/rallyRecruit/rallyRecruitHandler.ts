@@ -15,12 +15,16 @@ const rallyRecruitHandler = async (message: Message): Promise<void> => {
       return;
     }
 
+    console.log({ rallyRecruit });
+
     const targetUsers = [];
     for (const targetUser of rallyRecruit.targetUsers) {
       // user could be a role if the id starts with &
       if (targetUser.charAt(0) === '&') {
         const roleId = targetUser.replace('&', '');
         const roleMembers = message.guild.roles.cache.get(roleId).members;
+
+        console.log({ roleMembers });
 
         for (const member of roleMembers) {
           if (message.author.id === member[0]) continue;
