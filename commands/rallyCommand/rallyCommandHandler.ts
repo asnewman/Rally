@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { REACT_EMOJI, REMOVE_EMOJI, COMMAND_PREFIX } from "../../constants";
+import { REACT_EMOJI, REMOVE_EMOJI } from "../../constants";
 import { IRally, Rally } from "../../entities/Rally/Rally";
 import {
   generateRallyMessage,

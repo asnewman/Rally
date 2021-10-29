@@ -17,7 +17,18 @@ const rallyRecruitHandler = async (message: Message): Promise<void> => {
 
     const targetUsers = [];
     for (const targetUser of rallyRecruit.targetUsers) {
-      targetUsers.push(await client.users.fetch(targetUser));
+      // user could be a role if the id starts with &
+      if (targetUser.charAt(0) === '&') {
+        const roleId = targetUser.replace('&', '');
+        const roleMembers = message.guild.roles.cache.get(roleId).members;
+
+        for (const member of roleMembers) {
+          targetUsers.push(await client.users.fetch(member[0])); 
+        }
+      }
+      else {
+        targetUsers.push(await client.users.fetch(targetUser));
+      }
     }
 
     validateRallyRecruitMessage(targetUsers, message.author);

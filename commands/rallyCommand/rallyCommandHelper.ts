@@ -18,7 +18,7 @@ const generateRallyMessage = (
     rally;
   const neededPlayers = userCount - userIds.length - 1;
 
-  let rallyMsg;
+  let rallyMsg: string;
 
   if (hasFilled) {
     rallyMsg =
@@ -70,7 +70,7 @@ export const generateUserListForRallyMessage = (userIds: string[]): string => {
 
 const parseRallyMessageString = (command: string): RallyCommandBareInfo => {
   const INVALID_RALLY_COMMAND_MSG =
-    "Invalid Rally command. Please use !rally <game name> <player count>.";
+    "Invalid Rally command. Please use !rally <game name> <player count>. For more help use !rally_help.";
 
   const commandBody = command.slice(COMMAND_PREFIX.length);
 

@@ -28,6 +28,7 @@
     "mongoose": "^5.10.8"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.12",
     "@types/express": "^4.17.8",
     "@types/mongoose": "^5.7.36",
     "tslint": "^6.1.3",
